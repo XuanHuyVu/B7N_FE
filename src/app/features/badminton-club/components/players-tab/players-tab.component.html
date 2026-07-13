@@ -1,0 +1,112 @@
+<section class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <button type="button" class="btn-primary" (click)="club.prepareCreateForm()">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14" /><path d="M5 12h14" /></svg>
+      Thêm người chơi
+    </button>
+    <div class="text-sm font-bold text-stone-600">
+      {{ club.selectedCodes().size }}/{{ club.players().length }} đang chọn
+    </div>
+  </div>
+
+  @if (club.showCreateForm()) {
+    <form class="grid gap-3 rounded-lg border border-green-100 bg-white p-4 shadow-sm sm:grid-cols-2" (ngSubmit)="club.addPlayer()">
+      <label class="field">
+        <span>Mã người chơi</span>
+        <input name="playerCode" [(ngModel)]="club.playerForm.playerCode" />
+      </label>
+      <label class="field">
+        <span>Tên người chơi</span>
+        <input name="name" [(ngModel)]="club.playerForm.name" />
+      </label>
+      <label class="field">
+        <span>Giới tính</span>
+        <select name="gender" [(ngModel)]="club.playerForm.gender">
+          <option [value]="gender.MALE">{{ genderLabels[gender.MALE] }}</option>
+          <option [value]="gender.FEMALE">{{ genderLabels[gender.FEMALE] }}</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Trình độ</span>
+        <select name="level" [(ngModel)]="club.playerForm.level">
+          @for (level of levels; track level) {
+            <option [value]="level">{{ levelLabels[level] }}</option>
+          }
+        </select>
+      </label>
+      <div class="flex gap-2 sm:col-span-2">
+        <button type="submit" class="btn-primary" [disabled]="club.loading()">Lưu người chơi</button>
+      </div>
+    </form>
+  }
+
+  <div class="rounded-lg bg-white p-4 shadow-sm">
+    <div class="mb-4 flex items-center justify-between">
+      <h2 class="section-title">Danh sách</h2>
+      <div class="flex gap-3 text-sm font-extrabold">
+        <button class="text-green-800" type="button" (click)="club.selectAll()">Chọn hết</button>
+        <button class="text-stone-500" type="button" (click)="club.clearSelection()">Bỏ hết</button>
+      </div>
+    </div>
+
+    <div class="grid gap-3 md:grid-cols-2">
+      @for (player of club.players(); track player.playerCode) {
+        <div class="space-y-3 rounded-md border border-stone-200 bg-[#fffdf7] p-3">
+          <div class="flex min-h-12 items-center gap-3">
+            <button class="min-w-0 flex-1 text-left" type="button" (click)="club.openPlayerDetail(player)">
+              <span class="block truncate text-base font-extrabold text-green-950">{{ player.name }}</span>
+              <span class="text-xs font-bold text-stone-500">{{ levelLabels[player.level] }}</span>
+            </button>
+            <button
+              type="button"
+              class="switch"
+              [class.is-on]="club.selectedCodes().has(player.playerCode)"
+              (click)="club.togglePlayer(player.playerCode)"
+              aria-label="Chọn người chơi"
+            ></button>
+            <button class="btn-edit" type="button" (click)="club.startEditPlayer(player)" aria-label="Sửa người chơi">
+              <svg viewBox="0 0 24 24"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" /></svg>
+            </button>
+            <button class="icon-danger" type="button" (click)="club.deletePlayer(player)" aria-label="Xóa người chơi">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /></svg>
+            </button>
+          </div>
+
+          @if (club.editingPlayerCode() === player.playerCode) {
+            <form class="grid gap-3 border-t border-stone-200 pt-3 sm:grid-cols-2" (ngSubmit)="club.updateEditingPlayer()">
+              <label class="field sm:col-span-2">
+                <span>Mã người chơi</span>
+                <input name="editPlayerCode-{{ player.playerCode }}" [(ngModel)]="club.editPlayerForm.playerCode" readonly />
+              </label>
+              <label class="field sm:col-span-2">
+                <span>Tên người chơi</span>
+                <input name="editName-{{ player.playerCode }}" [(ngModel)]="club.editPlayerForm.name" />
+              </label>
+              <label class="field">
+                <span>Giới tính</span>
+                <select name="editGender-{{ player.playerCode }}" [(ngModel)]="club.editPlayerForm.gender">
+                  <option [value]="gender.MALE">{{ genderLabels[gender.MALE] }}</option>
+                  <option [value]="gender.FEMALE">{{ genderLabels[gender.FEMALE] }}</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Trình độ</span>
+                <select name="editLevel-{{ player.playerCode }}" [(ngModel)]="club.editPlayerForm.level">
+                  @for (level of levels; track level) {
+                    <option [value]="level">{{ levelLabels[level] }}</option>
+                  }
+                </select>
+              </label>
+              <div class="flex flex-wrap gap-2 sm:col-span-2">
+                <button class="btn-primary" type="submit" [disabled]="club.loading()">Lưu thay đổi</button>
+                <button class="btn-secondary" type="button" (click)="club.cancelEditPlayer()">Hủy</button>
+              </div>
+            </form>
+          }
+        </div>
+      } @empty {
+        <p class="rounded-md bg-stone-100 p-4 text-sm font-semibold text-stone-500">Chưa có người chơi.</p>
+      }
+    </div>
+  </div>
+</section>

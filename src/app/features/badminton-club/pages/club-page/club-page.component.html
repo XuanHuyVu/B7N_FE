@@ -1,0 +1,91 @@
+<main class="min-h-screen bg-[#f5f0df] text-stone-900">
+  <div class="mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-4 sm:px-6 lg:px-8">
+    <header class="flex items-center gap-3 pt-2">
+      <div>
+        <h1 class="font-display text-3xl font-black uppercase leading-none text-green-900 sm:text-5xl">
+          B7N
+        </h1>
+      </div>
+    </header>
+
+    <nav class="grid grid-cols-3 gap-2 rounded-lg bg-stone-200 p-1">
+      @for (tab of tabs; track tab.id) {
+        <button
+          type="button"
+          class="flex min-h-12 items-center justify-center gap-2 rounded-md px-2 text-sm font-extrabold text-stone-600 transition"
+          [class.bg-white]="activeTab() === tab.id"
+          [class.text-green-800]="activeTab() === tab.id"
+          [class.shadow-sm]="activeTab() === tab.id"
+          (click)="activeTab.set(tab.id)"
+        >
+          <span class="icon-wrap">
+            @if (tab.icon === 'user') {
+              <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0" /><circle cx="12" cy="7" r="4" /></svg>
+            } @else if (tab.icon === 'shuttle') {
+              <svg viewBox="0 0 24 24"><path d="m6 18 12-12" /><path d="m14 4 6 6" /><path d="M4 20h5l11-11-5-5L4 15v5Z" /></svg>
+            } @else {
+              <svg viewBox="0 0 24 24"><path d="M4 19V5" /><path d="M4 19h16" /><path d="M8 16v-5" /><path d="M12 16V8" /><path d="M16 16v-3" /></svg>
+            }
+          </span>
+          <span class="hidden sm:inline">{{ tab.label }}</span>
+        </button>
+      }
+    </nav>
+
+    @if (club.message()) {
+      <div class="rounded-md border border-green-200 bg-white px-4 py-3 text-sm font-semibold text-green-900 shadow-sm">
+        {{ club.message() }}
+      </div>
+    }
+
+    @switch (activeTab()) {
+      @case (tabId.PLAYERS) {
+        <app-players-tab />
+      }
+      @case (tabId.SCHEDULE) {
+        <app-schedule-tab />
+      }
+      @case (tabId.HISTORY) {
+        <app-history-tab />
+      }
+    }
+  </div>
+
+  @if (club.selectedPlayer(); as player) {
+    <div class="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4">
+      <form class="w-full max-w-md rounded-lg bg-white p-5 shadow-xl" (ngSubmit)="club.updateSelectedPlayer()">
+        <div class="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <h2 class="section-title">{{ player.name }}</h2>
+            <p class="text-sm font-bold text-stone-500">{{ player.playerCode }} · điểm {{ player.levelScore ?? 0 }}</p>
+          </div>
+          <button type="button" class="icon-button" (click)="club.closePlayerDetail()" aria-label="Đóng">
+            <svg viewBox="0 0 24 24"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+          </button>
+        </div>
+        <div class="grid gap-3">
+          <label class="field">
+            <span>Tên người chơi</span>
+            <input name="detailName" [(ngModel)]="player.name" />
+          </label>
+          <label class="field">
+            <span>Giới tính</span>
+            <select name="detailGender" [(ngModel)]="player.gender">
+              <option [value]="gender.MALE">{{ genderLabels[gender.MALE] }}</option>
+              <option [value]="gender.FEMALE">{{ genderLabels[gender.FEMALE] }}</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Trình độ</span>
+            <select name="detailLevel" [(ngModel)]="player.level">
+              @for (level of levels; track level) {
+                <option [value]="level">{{ levelLabels[level] }}</option>
+              }
+            </select>
+          </label>
+          <button class="btn-primary justify-center" type="submit">Cập nhật</button>
+        </div>
+      </form>
+    </div>
+  }
+</main>

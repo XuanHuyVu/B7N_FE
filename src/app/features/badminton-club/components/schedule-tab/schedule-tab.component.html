@@ -1,0 +1,62 @@
+<section class="space-y-4">
+  <div class="flex flex-wrap items-end gap-3 rounded-lg bg-white p-4 shadow-sm">
+    <label class="field w-32">
+      <span>Số sân</span>
+      <select name="courtCount" [(ngModel)]="club.courtCount">
+        @for (count of courtOptions; track count) {
+          <option [value]="count">{{ count }} sân</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="btn-primary" [disabled]="club.loading()" (click)="club.scheduleRound()">
+      <svg viewBox="0 0 24 24"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></svg>
+      Xếp trận
+    </button>
+    <button type="button" class="btn-secondary" (click)="club.cancelSchedule()">
+      <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 3v6h6" /></svg>
+      Hủy
+    </button>
+  </div>
+
+  @if (club.currentRound(); as round) {
+    <div class="grid gap-4 lg:grid-cols-2">
+      @for (match of round.matches; track match.courtNumber) {
+        <article class="rounded-lg border border-green-100 bg-white p-4 shadow-sm">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="section-title">Sân {{ match.courtNumber }}</h2>
+            <span class="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-green-800">
+              Vòng {{ match.roundNumber }}
+            </span>
+          </div>
+          <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+            <div class="team-box">
+              @for (player of team(match, teamCode.A); track player.playerCode) {
+                <div>{{ player.name }}</div>
+              }
+            </div>
+            <div class="font-display text-2xl font-black text-stone-400">VS</div>
+            <div class="team-box text-right">
+              @for (player of team(match, teamCode.B); track player.playerCode) {
+                <div>{{ player.name }}</div>
+              }
+            </div>
+          </div>
+          <div class="mt-4 grid gap-2 sm:grid-cols-2">
+            <button class="btn-primary justify-center" type="button" [disabled]="!!club.completedCourts()[match.courtNumber]" (click)="club.recordWinner(match, teamCode.A)">
+              <svg viewBox="0 0 24 24"><path d="M8 21h8" /><path d="M12 17v4" /><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z" /><path d="M5 5H3v2a4 4 0 0 0 4 4" /><path d="M19 5h2v2a4 4 0 0 1-4 4" /></svg>
+              Đội trái thắng
+            </button>
+            <button class="btn-primary justify-center" type="button" [disabled]="!!club.completedCourts()[match.courtNumber]" (click)="club.recordWinner(match, teamCode.B)">
+              <svg viewBox="0 0 24 24"><path d="M8 21h8" /><path d="M12 17v4" /><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z" /><path d="M5 5H3v2a4 4 0 0 0 4 4" /><path d="M19 5h2v2a4 4 0 0 1-4 4" /></svg>
+              Đội phải thắng
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="rounded-lg border border-dashed border-green-300 bg-white/70 p-8 text-center font-bold text-stone-500">
+      Chọn người chơi ở tab Người chơi rồi bấm Xếp trận.
+    </div>
+  }
+</section>

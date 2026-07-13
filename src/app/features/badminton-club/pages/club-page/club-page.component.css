@@ -1,0 +1,214 @@
+:host {
+  display: block;
+  font-family: "Segoe UI", "Be Vietnam Pro", Roboto, Arial, Helvetica, sans-serif;
+}
+
+.font-display,
+.section-title {
+  font-family: "Segoe UI", "Be Vietnam Pro", Roboto, Arial, Helvetica, sans-serif;
+  letter-spacing: 0;
+}
+
+.section-title {
+  text-transform: uppercase;
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #14532d;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 900;
+  transition: transform 160ms ease, opacity 160ms ease, background 160ms ease;
+}
+
+.btn-primary {
+  background: #15803d;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #166534;
+}
+
+.btn-secondary {
+  background: #e7e5e4;
+  color: #44403c;
+}
+
+.btn-danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-danger:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.btn-primary svg,
+.btn-secondary svg,
+.btn-danger svg,
+.icon-button svg,
+.icon-neutral svg,
+.icon-danger svg,
+.icon-wrap svg {
+  height: 1.1rem;
+  width: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #57534e;
+}
+
+.field input,
+.field select {
+  min-height: 2.7rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d6d3d1;
+  background: #fffdf7;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: none;
+  color: #1c1917;
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #15803d;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.14);
+}
+
+.switch {
+  position: relative;
+  height: 1.65rem;
+  width: 3rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #d6d3d1;
+  transition: background 160ms ease;
+}
+
+.switch::after {
+  position: absolute;
+  left: 0.2rem;
+  top: 0.2rem;
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 999px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  content: "";
+  transition: transform 160ms ease;
+}
+
+.switch.is-on {
+  background: #15803d;
+}
+
+.switch.is-on::after {
+  transform: translateX(1.35rem);
+}
+
+.icon-button,
+.icon-danger {
+  display: grid;
+  height: 2.35rem;
+  width: 2.35rem;
+  place-items: center;
+  border-radius: 0.5rem;
+}
+
+.icon-button {
+  background: #f5f5f4;
+  color: #44403c;
+}
+
+.btn-edit {
+  display: inline-flex;
+  min-height: 2.35rem;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 0.5rem;
+  background: #dcfce7;
+  color: #166534;
+  padding: 0 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.btn-edit:hover {
+  background: #bbf7d0;
+}
+
+.btn-edit svg {
+  height: 1rem;
+  width: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.icon-danger {
+  color: #dc2626;
+}
+
+.icon-danger:hover {
+  background: #fee2e2;
+}
+.team-box {
+  display: grid;
+  min-height: 6rem;
+  align-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  background: #f5f0df;
+  padding: 1rem;
+  font-weight: 900;
+  color: #14532d;
+}
+
+.trophy {
+  color: #15803d;
+}
+
+@media (max-width: 520px) {
+  .team-box {
+    min-height: 5rem;
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    padding-inline: 0.75rem;
+    font-size: 0.82rem;
+  }
+}

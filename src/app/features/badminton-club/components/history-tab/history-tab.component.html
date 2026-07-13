@@ -1,0 +1,72 @@
+<section class="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+  <article class="rounded-lg bg-white p-4 shadow-sm">
+    <h2 class="section-title mb-4 flex items-center gap-2">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8" /><path d="M12 17v4" /><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z" /></svg>
+      Bảng xếp hạng
+    </h2>
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[520px] text-left text-sm">
+        <thead class="text-xs uppercase text-stone-500">
+          <tr>
+            <th class="py-2">#</th>
+            <th>Người chơi</th>
+            <th>Trận</th>
+            <th>Thắng</th>
+            <th>Tỉ lệ thắng</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-100 font-bold">
+          @for (row of club.ranking(); track row.player.playerCode; let index = $index) {
+            <tr>
+              <td class="py-3">{{ index + 1 }}</td>
+              <td>{{ row.player.name }}</td>
+              <td>{{ row.matches }}</td>
+              <td>{{ row.wins }}</td>
+              <td>
+                <span class="rounded-full px-3 py-1 text-xs font-black" [class.bg-green-100]="row.winRate > 0" [class.text-green-800]="row.winRate > 0" [class.bg-stone-100]="row.winRate === 0" [class.text-stone-500]="row.winRate === 0">
+                  {{ row.winRate }}%
+                </span>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5" class="py-4 text-stone-500">Chưa có dữ liệu.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="rounded-lg bg-white p-4 shadow-sm">
+    <div class="mb-4 flex items-center justify-between gap-3">
+      <h2 class="section-title">Lịch sử trận đấu</h2>
+      <button class="btn-danger" type="button" (click)="club.clearHistory()">
+        <svg viewBox="0 0 24 24"><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="M19 6l-1 14H6L5 6" /></svg>
+        Xóa lịch sử
+      </button>
+    </div>
+    <div class="space-y-5">
+      @for (group of club.groupedHistory(); track group.date) {
+        <div>
+          <h3 class="mb-2 text-sm font-black text-stone-500">{{ group.date }} · {{ group.items.length }} trận</h3>
+          <div class="space-y-2">
+            @for (item of group.items; track item.id) {
+              <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-md bg-[#fffdf7] p-3 text-sm">
+                <div class="font-extrabold" [class.text-green-800]="item.winner === teamCode.A" [class.text-stone-500]="item.winner !== teamCode.A">
+                  @if (item.winner === teamCode.A) { <span class="trophy">★</span> }
+                  {{ playerNames(item.teamA) }}
+                </div>
+                <div class="font-black uppercase text-stone-400">vs</div>
+                <div class="text-right font-extrabold" [class.text-green-800]="item.winner === teamCode.B" [class.text-stone-500]="item.winner !== teamCode.B">
+                  {{ playerNames(item.teamB) }}
+                  @if (item.winner === teamCode.B) { <span class="trophy">★</span> }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      } @empty {
+        <p class="rounded-md bg-stone-100 p-4 text-sm font-semibold text-stone-500">Chưa có lịch sử trận đấu.</p>
+      }
+    </div>
+  </article>
+</section>
