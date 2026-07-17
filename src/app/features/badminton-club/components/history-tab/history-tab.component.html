@@ -58,13 +58,13 @@
             @for (item of group.items; track item.id) {
               <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 rounded-md bg-pink-50 p-3 text-sm text-pink-950 sm:gap-3">
                 <div class="col-span-3 text-xs font-black uppercase text-pink-400">Trận {{ item.roundNumber }} · Sân {{ item.courtNumber }} · {{ item.playedAt | date: 'dd/MM/yyyy HH:mm' }}</div>
-                <div class="grid min-w-0 gap-1 break-words font-extrabold leading-tight" [class.text-pink-700]="item.winner === teamCode.A" [class.text-pink-400]="item.winner !== teamCode.A">
+                <div class="grid min-w-0 gap-1 wrap-break-word font-extrabold leading-tight" [class.text-pink-700]="item.winner === teamCode.A" [class.text-pink-400]="item.winner !== teamCode.A">
                   @for (player of item.teamA; track player.playerCode) {
                     <span>{{ player.name }}</span>
                   }
                 </div>
                 <div class="px-1 text-center font-black uppercase text-pink-300">vs</div>
-                <div class="grid min-w-0 gap-1 break-words text-right font-extrabold leading-tight" [class.text-pink-700]="item.winner === teamCode.B" [class.text-pink-400]="item.winner !== teamCode.B">
+                <div class="grid min-w-0 gap-1 wrap-break-word text-right font-extrabold leading-tight" [class.text-pink-700]="item.winner === teamCode.B" [class.text-pink-400]="item.winner !== teamCode.B">
                   @for (player of item.teamB; track player.playerCode) {
                     <span>{{ player.name }}</span>
                   }
