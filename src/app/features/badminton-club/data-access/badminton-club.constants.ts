@@ -21,7 +21,7 @@ export const PLAYER_LEVELS: EPlayerLevel[] = [
   EPlayerLevel.CHUYEN_NGHIEP,
 ];
 
-export const COURT_OPTIONS = [1, 2, 3, 4, 5, 6];
+export const COURT_OPTIONS = [1, 2];
 
 export const EMPTY_PLAYER_FORM: Player = {
   playerCode: '',

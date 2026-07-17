@@ -46,6 +46,7 @@ export interface Match {
   totalScoreA: number;
   totalScoreB: number;
   scoreDifference: number;
+  winner?: ETeamCode;
   players: MatchPlayer[];
 }
 
@@ -57,6 +58,7 @@ export interface RoundResponse {
 
 export interface MatchHistory {
   id: string;
+  sessionCode: string;
   playedAt: string;
   roundNumber: number;
   courtNumber: number;
@@ -70,6 +72,32 @@ export interface RankingRow {
   matches: number;
   wins: number;
   winRate: number;
+}
+
+export interface HistoryResponse {
+  history: MatchHistory[];
+}
+
+export interface RankingResponse {
+  ranking: RankingRow[];
+}
+
+export interface SessionPlayerStat {
+  player: Player;
+  matchCount: number;
+  restCount: number;
+  consecutiveMatchCount: number;
+}
+
+export interface SessionStatsResponse {
+  sessionCode: string;
+  players: SessionPlayerStat[];
+}
+
+export interface PlaySessionStateResponse {
+  session: PlaySessionSummary;
+  currentRound: RoundResponse | null;
+  players: SessionPlayerStat[];
 }
 
 export interface HistoryGroup {

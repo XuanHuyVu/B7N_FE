@@ -1,31 +1,25 @@
-<main class="min-h-screen bg-[#f5f0df] text-stone-900">
+<main class="min-h-screen bg-pink-50 text-pink-950">
   <div class="mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-4 sm:px-6 lg:px-8">
     <header class="flex items-center gap-3 pt-2">
       <div>
-        <h1 class="font-display text-3xl font-black uppercase leading-none text-green-900 sm:text-5xl">
+        <h1 class="font-display text-3xl font-black uppercase leading-none text-pink-600 sm:text-5xl">
           B7N
         </h1>
       </div>
     </header>
 
-    <nav class="grid grid-cols-3 gap-2 rounded-lg bg-stone-200 p-1">
+    <nav class="grid grid-cols-3 gap-2 rounded-lg bg-white p-1 shadow-sm ring-1 ring-pink-100">
       @for (tab of tabs; track tab.id) {
         <button
           type="button"
-          class="flex min-h-12 items-center justify-center gap-2 rounded-md px-2 text-sm font-extrabold text-stone-600 transition"
-          [class.bg-white]="activeTab() === tab.id"
-          [class.text-green-800]="activeTab() === tab.id"
+          class="flex min-h-12 items-center justify-center gap-2 rounded-md px-2 text-sm font-extrabold text-pink-400 transition [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center"
+          [class.bg-pink-500]="activeTab() === tab.id"
+          [class.text-white]="activeTab() === tab.id"
           [class.shadow-sm]="activeTab() === tab.id"
           (click)="activeTab.set(tab.id)"
         >
-          <span class="icon-wrap">
-            @if (tab.icon === 'user') {
-              <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0" /><circle cx="12" cy="7" r="4" /></svg>
-            } @else if (tab.icon === 'shuttle') {
-              <svg viewBox="0 0 24 24"><path d="m6 18 12-12" /><path d="m14 4 6 6" /><path d="M4 20h5l11-11-5-5L4 15v5Z" /></svg>
-            } @else {
-              <svg viewBox="0 0 24 24"><path d="M4 19V5" /><path d="M4 19h16" /><path d="M8 16v-5" /><path d="M12 16V8" /><path d="M16 16v-3" /></svg>
-            }
+          <span>
+            <lucide-icon [img]="icons[tab.icon]" [size]="18"></lucide-icon>
           </span>
           <span class="hidden sm:inline">{{ tab.label }}</span>
         </button>
@@ -33,7 +27,7 @@
     </nav>
 
     @if (club.message()) {
-      <div class="rounded-md border border-green-200 bg-white px-4 py-3 text-sm font-semibold text-green-900 shadow-sm">
+      <div class="rounded-md border border-pink-200 bg-pink-100 px-4 py-3 text-sm font-semibold text-pink-700 shadow-sm">
         {{ club.message() }}
       </div>
     }
@@ -52,38 +46,38 @@
   </div>
 
   @if (club.selectedPlayer(); as player) {
-    <div class="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4">
-      <form class="w-full max-w-md rounded-lg bg-white p-5 shadow-xl" (ngSubmit)="club.updateSelectedPlayer()">
+    <div class="fixed inset-0 z-50 grid place-items-center bg-black/20 p-4">
+      <form class="w-full max-w-md rounded-lg bg-white p-5 text-pink-950 shadow-xl ring-1 ring-pink-100" (ngSubmit)="club.updateSelectedPlayer()">
         <div class="mb-4 flex items-start justify-between gap-3">
           <div>
-            <h2 class="section-title">{{ player.name }}</h2>
-            <p class="text-sm font-bold text-stone-500">{{ player.playerCode }} · điểm {{ player.levelScore ?? 0 }}</p>
+            <h2 class="text-[1.35rem] font-black uppercase leading-none text-pink-600">{{ player.name }}</h2>
+            <p class="text-sm font-bold text-pink-400">{{ player.playerCode }} · điểm {{ player.levelScore ?? 0 }}</p>
           </div>
-          <button type="button" class="icon-button" (click)="club.closePlayerDetail()" aria-label="Đóng">
-            <svg viewBox="0 0 24 24"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+          <button type="button" class="grid size-[2.35rem] place-items-center rounded-lg bg-pink-100 text-pink-600 hover:bg-pink-200 [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" (click)="club.closePlayerDetail()" aria-label="Đóng">
+            <lucide-icon [img]="icons.x" [size]="18"></lucide-icon>
           </button>
         </div>
         <div class="grid gap-3">
-          <label class="field">
+          <label class="grid gap-1.5 text-xs font-black uppercase text-pink-500">
             <span>Tên người chơi</span>
-            <input name="detailName" [(ngModel)]="player.name" />
+            <input class="min-h-11 rounded-lg border border-pink-200 bg-pink-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-pink-950 outline-none focus:border-pink-400 focus:ring-3 focus:ring-pink-300/40" name="detailName" [(ngModel)]="player.name" />
           </label>
-          <label class="field">
+          <label class="grid gap-1.5 text-xs font-black uppercase text-pink-500">
             <span>Giới tính</span>
-            <select name="detailGender" [(ngModel)]="player.gender">
+            <select class="min-h-11 rounded-lg border border-pink-200 bg-pink-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-pink-950 outline-none focus:border-pink-400 focus:ring-3 focus:ring-pink-300/40" name="detailGender" [(ngModel)]="player.gender">
               <option [value]="gender.MALE">{{ genderLabels[gender.MALE] }}</option>
               <option [value]="gender.FEMALE">{{ genderLabels[gender.FEMALE] }}</option>
             </select>
           </label>
-          <label class="field">
+          <label class="grid gap-1.5 text-xs font-black uppercase text-pink-500">
             <span>Trình độ</span>
-            <select name="detailLevel" [(ngModel)]="player.level">
+            <select class="min-h-11 rounded-lg border border-pink-200 bg-pink-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-pink-950 outline-none focus:border-pink-400 focus:ring-3 focus:ring-pink-300/40" name="detailLevel" [(ngModel)]="player.level">
               @for (level of levels; track level) {
                 <option [value]="level">{{ levelLabels[level] }}</option>
               }
             </select>
           </label>
-          <button class="btn-primary justify-center" type="submit">Cập nhật</button>
+          <button class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-pink-500 px-4 py-2.5 text-sm font-black text-white transition hover:bg-pink-600 disabled:cursor-not-allowed disabled:opacity-55" type="submit">Cập nhật</button>
         </div>
       </form>
     </div>

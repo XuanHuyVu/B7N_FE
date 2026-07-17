@@ -7,25 +7,35 @@ import { ETeamCode } from '../../../core/enums/team-code.enum';
 import { EMPTY_PLAYER_FORM } from './badminton-club.constants';
 import {
   ApiResponse,
+  HistoryResponse,
   Match,
   MatchHistory,
   Player,
+  PlaySessionStateResponse,
+  PlaySessionSummary,
+  RankingResponse,
   RankingRow,
   RoundInfo,
   RoundResponse,
-  SessionResponse
+  SessionPlayerStat,
+  SessionResponse,
+  SessionStatsResponse
 } from './badminton-club.models';
-import { playersByTeam } from './badminton-club.utils';
 
 @Injectable({ providedIn: 'root' })
 export class BadmintonClubService {
   private readonly http = inject(HttpClient);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private messageTimeout: ReturnType<typeof setTimeout> | null = null;
 
   readonly players = signal<Player[]>([]);
   readonly selectedCodes = signal<Set<string>>(new Set());
   readonly history = signal<MatchHistory[]>([]);
+  readonly ranking = signal<RankingRow[]>([]);
+  readonly sessions = signal<PlaySessionSummary[]>([]);
+  readonly selectedHistorySession = signal<string>('');
   readonly currentSession = signal<string | null>(null);
+  readonly currentSessionStats = signal<SessionPlayerStat[]>([]);
   readonly currentRound = signal<RoundResponse | null>(null);
   readonly completedCourts = signal<Record<number, ETeamCode>>({});
   readonly selectedPlayer = signal<Player | null>(null);
@@ -34,44 +44,18 @@ export class BadmintonClubService {
   readonly loading = signal(false);
   readonly message = signal('');
 
-  courtCount = 2;
+  courtCount = 1;
   playerForm: Player = { ...EMPTY_PLAYER_FORM };
   editPlayerForm: Player = { ...EMPTY_PLAYER_FORM };
-
-  readonly ranking = computed<RankingRow[]>(() => {
-    const rows = new Map<string, Omit<RankingRow, 'winRate'>>();
-
-    for (const item of this.history()) {
-      const allPlayers = [...item.teamA, ...item.teamB];
-      const winners = item.winner === ETeamCode.A ? item.teamA : item.teamB;
-
-      for (const player of allPlayers) {
-        const row = rows.get(player.playerCode) ?? { player, matches: 0, wins: 0 };
-        row.matches += 1;
-        if (winners.some((winner) => winner.playerCode === player.playerCode)) {
-          row.wins += 1;
-        }
-        rows.set(player.playerCode, row);
-      }
-    }
-
-    return Array.from(rows.values())
-      .map((row) => ({
-        ...row,
-        winRate: row.matches ? Math.round((row.wins / row.matches) * 100) : 0
-      }))
-      .sort((a, b) => b.winRate - a.winRate || b.wins - a.wins || a.player.name.localeCompare(b.player.name));
-  });
 
   readonly groupedHistory = computed(() => {
     const groups = new Map<string, MatchHistory[]>();
 
     for (const item of this.history()) {
-      const key = new Intl.DateTimeFormat('vi-VN').format(new Date(item.playedAt));
-      groups.set(key, [...(groups.get(key) ?? []), item]);
+      groups.set(item.sessionCode, [...(groups.get(item.sessionCode) ?? []), item]);
     }
 
-    return Array.from(groups.entries()).map(([date, items]) => ({ date, items }));
+    return Array.from(groups.entries()).map(([sessionCode, items]) => ({ sessionCode, items }));
   });
 
   init(): void {
@@ -79,7 +63,10 @@ export class BadmintonClubService {
       return;
     }
 
+    this.restoreCurrentSession();
+    this.loadSessions();
     this.loadHistory();
+    this.loadRanking();
     this.loadPlayers();
   }
 
@@ -87,7 +74,7 @@ export class BadmintonClubService {
     this.loading.set(true);
     this.http.get<ApiResponse<Player[]>>(API_ENDPOINTS.players).subscribe({
       next: (response) => {
-        const players = response.data ?? [];
+        const players = this.sortPlayersByLastName(response.data ?? []);
         this.players.set(players);
         if (this.selectedCodes().size === 0) {
           this.selectedCodes.set(new Set(players.map((player) => player.playerCode)));
@@ -95,28 +82,55 @@ export class BadmintonClubService {
         this.loading.set(false);
       },
       error: () => {
-        this.message.set('Không tải được danh sách người chơi. Hãy kiểm tra backend B7N_BE.');
+        this.showMessage('Không tải được danh sách người chơi. Hãy kiểm tra backend B7N_BE.');
         this.loading.set(false);
       }
     });
   }
 
+  loadSessions(): void {
+    this.http.get<ApiResponse<PlaySessionSummary[]>>(API_ENDPOINTS.playSessions).subscribe({
+      next: (response) => this.sessions.set(response.data ?? []),
+      error: () => this.showMessage('Không tải được danh sách ca chơi.')
+    });
+  }
+
+  changeHistorySession(sessionCode: string): void {
+    this.selectedHistorySession.set(sessionCode);
+    this.loadHistory();
+    this.loadRanking();
+  }
+
+  loadHistory(): void {
+    this.http.get<ApiResponse<HistoryResponse>>(API_ENDPOINTS.history(this.selectedHistorySession())).subscribe({
+      next: (response) => this.history.set(response.data?.history ?? []),
+      error: () => this.showMessage('Không tải được lịch sử trận đấu.')
+    });
+  }
+
+  loadRanking(): void {
+    this.http.get<ApiResponse<RankingResponse>>(API_ENDPOINTS.ranking(this.selectedHistorySession())).subscribe({
+      next: (response) => this.ranking.set(response.data?.ranking ?? []),
+      error: () => this.showMessage('Không tải được bảng xếp hạng.')
+    });
+  }
+
   addPlayer(): void {
     if (!this.playerForm.playerCode || !this.playerForm.name) {
-      this.message.set('Vui lòng nhập mã và tên người chơi.');
+      this.showMessage('Vui lòng nhập mã và tên người chơi.');
       return;
     }
 
     this.loading.set(true);
     this.http.post<ApiResponse<Player>>(API_ENDPOINTS.players, this.playerForm).subscribe({
       next: () => {
-        this.message.set('Đã thêm người chơi.');
+        this.showMessage('Đã thêm người chơi.');
         this.resetPlayerForm();
         this.showCreateForm.set(false);
         this.loadPlayers();
       },
       error: () => {
-        this.message.set('Không thêm được người chơi.');
+        this.showMessage('Không thêm được người chơi.');
         this.loading.set(false);
       }
     });
@@ -135,7 +149,7 @@ export class BadmintonClubService {
   updateEditingPlayer(): void {
     const playerCode = this.editingPlayerCode();
     if (!playerCode || !this.editPlayerForm.name) {
-      this.message.set('Vui lòng nhập tên người chơi.');
+      this.showMessage('Vui lòng nhập tên người chơi.');
       return;
     }
 
@@ -148,12 +162,12 @@ export class BadmintonClubService {
     this.loading.set(true);
     this.http.patch<ApiResponse<Player>>(`${API_ENDPOINTS.players}/${playerCode}`, payload).subscribe({
       next: () => {
-        this.message.set('Đã cập nhật người chơi.');
+        this.showMessage('Đã cập nhật người chơi.');
         this.cancelEditPlayer();
         this.loadPlayers();
       },
       error: () => {
-        this.message.set('Không cập nhật được người chơi.');
+        this.showMessage('Không cập nhật được người chơi.');
         this.loading.set(false);
       }
     });
@@ -169,10 +183,10 @@ export class BadmintonClubService {
     this.http.patch<ApiResponse<Player>>(`${API_ENDPOINTS.players}/${player.playerCode}`, payload).subscribe({
       next: (response) => {
         this.selectedPlayer.set(response.data);
-        this.message.set('Đã cập nhật người chơi.');
+        this.showMessage('Đã cập nhật người chơi.');
         this.loadPlayers();
       },
-      error: () => this.message.set('Không cập nhật được người chơi.')
+      error: () => this.showMessage('Không cập nhật được người chơi.')
     });
   }
 
@@ -193,7 +207,7 @@ export class BadmintonClubService {
         }
         this.loadPlayers();
       },
-      error: () => this.message.set('Không xóa được người chơi.')
+      error: () => this.showMessage('Không xóa được người chơi.')
     });
   }
 
@@ -232,7 +246,7 @@ export class BadmintonClubService {
   scheduleRound(): void {
     const playerCodes = Array.from(this.selectedCodes());
     if (playerCodes.length < 4) {
-      this.message.set('Cần ít nhất 4 người chơi để xếp trận đôi.');
+      this.showMessage('Cần ít nhất 4 người chơi để xếp trận đôi.');
       return;
     }
 
@@ -247,11 +261,12 @@ export class BadmintonClubService {
     if (request) {
       request.subscribe({
         next: (response) => {
-          this.currentSession.set(response.data.session.sessionCode);
+          this.setCurrentSession(response.data.session.sessionCode);
+          this.loadSessionStats(response.data.session.sessionCode);
           this.generateNextRound(response.data.session.sessionCode);
         },
         error: () => {
-          this.message.set('Không tạo được ca chơi.');
+          this.showMessage('Không tạo được ca chơi.');
           this.loading.set(false);
         }
       });
@@ -261,10 +276,59 @@ export class BadmintonClubService {
     this.generateNextRound(this.currentSession()!);
   }
 
+  completeSession(): void {
+    const sessionCode = this.currentSession();
+    if (!sessionCode) {
+      return;
+    }
+
+    if (!confirm(`Kết thúc ca chơi ${sessionCode} và giữ lại lịch sử trong DB?`)) {
+      return;
+    }
+
+    this.loading.set(true);
+    this.http.post<ApiResponse<unknown>>(API_ENDPOINTS.completePlaySession(sessionCode), {}).subscribe({
+      next: () => {
+        this.clearCurrentSession();
+        this.showMessage('Đã kết thúc ca chơi. Bạn có thể tạo ca mới.');
+        this.loadSessions();
+        this.loadHistory();
+        this.loadRanking();
+        this.loading.set(false);
+      },
+      error: () => {
+        this.showMessage('Không kết thúc được ca chơi. Hãy hoàn thành vòng đang xếp trước.');
+        this.loading.set(false);
+      }
+    });
+  }
   cancelSchedule(): void {
-    this.currentRound.set(null);
-    this.completedCourts.set({});
-    this.message.set('Đã hủy kết quả xếp trận hiện tại.');
+    const sessionCode = this.currentSession();
+    if (!sessionCode) {
+      this.currentRound.set(null);
+      this.completedCourts.set({});
+      return;
+    }
+
+    if (!confirm(`Hủy ca chơi ${sessionCode} và xóa dữ liệu đã xếp trong DB?`)) {
+      return;
+    }
+
+    this.loading.set(true);
+    this.http.delete<ApiResponse<unknown>>(API_ENDPOINTS.playSession(sessionCode)).subscribe({
+      next: () => {
+        this.clearCurrentSession();
+        this.showMessage('Đã hủy ca chơi và xóa dữ liệu trong DB.');
+        this.loadSessions();
+        this.loadHistory();
+        this.loadRanking();
+        this.loading.set(false);
+      },
+      error: () => {
+        this.showMessage('Không hủy được ca chơi.');
+        this.loading.set(false);
+      }
+    });
   }
 
   recordWinner(match: Match, winner: ETeamCode): void {
@@ -272,19 +336,7 @@ export class BadmintonClubService {
       return;
     }
 
-    const record: MatchHistory = {
-      id: `${match.sessionCode}-${match.roundNumber}-${match.courtNumber}-${Date.now()}`,
-      playedAt: new Date().toISOString(),
-      roundNumber: match.roundNumber,
-      courtNumber: match.courtNumber,
-      winner,
-      teamA: playersByTeam(match, ETeamCode.A),
-      teamB: playersByTeam(match, ETeamCode.B)
-    };
-
     this.completedCourts.update((courts) => ({ ...courts, [match.courtNumber]: winner }));
-    this.history.update((items) => [record, ...items]);
-    this.saveHistory();
 
     const round = this.currentRound();
     const completedCount = Object.keys(this.completedCourts()).length;
@@ -294,11 +346,11 @@ export class BadmintonClubService {
   }
 
   clearHistory(): void {
-    if (!confirm('Xóa toàn bộ lịch sử trận đấu?')) {
-      return;
-    }
-    this.history.set([]);
-    this.saveHistory();
+    this.showMessage('Lịch sử trận đấu đang được quản lý trong DB.');
+  }
+
+  matchCountFor(playerCode: string): number {
+    return this.currentSessionStats().find((stat) => stat.player.playerCode === playerCode)?.matchCount ?? 0;
   }
 
   private generateNextRound(sessionCode: string): void {
@@ -306,30 +358,130 @@ export class BadmintonClubService {
       next: (response) => {
         this.currentRound.set(response.data);
         this.completedCourts.set({});
-        this.message.set(`Đã xếp vòng ${response.data.round.roundNumber}.`);
+        this.loadSessionStats(sessionCode);
+        this.showMessage(`Đã xếp vòng ${response.data.round.roundNumber} cho ca ${sessionCode}.`);
         this.loading.set(false);
       },
       error: () => {
-        this.message.set('Không xếp được trận. Có thể vòng trước chưa hoàn thành hoặc thiếu người.');
+        this.showMessage('Không xếp được trận. Có thể vòng trước chưa hoàn thành hoặc thiếu người.');
         this.loading.set(false);
       }
     });
   }
 
   private completeRound(round: RoundInfo): void {
+    const results = Object.entries(this.completedCourts()).map(([courtNumber, winner]) => ({
+      courtNumber: Number(courtNumber),
+      winner
+    }));
+
     this.http
       .post<ApiResponse<RoundResponse>>(API_ENDPOINTS.completeRound, {
         sessionCode: round.sessionCode,
-        roundNumber: round.roundNumber
+        roundNumber: round.roundNumber,
+        results
       })
       .subscribe({
         next: () => {
           this.currentRound.set(null);
           this.completedCourts.set({});
-          this.message.set('Đã lưu kết quả vòng. Có thể xếp vòng tiếp theo.');
+          this.loadSessionStats(round.sessionCode);
+          this.loadHistory();
+          this.loadRanking();
+          this.showMessage('Đã lưu kết quả vòng. Có thể xếp vòng tiếp theo.');
         },
-        error: () => this.message.set('Đã lưu lịch sử trên máy, nhưng backend chưa complete được vòng.')
+        error: () => this.showMessage('Không lưu được kết quả vòng vào DB.')
       });
+  }
+
+  private loadSessionState(sessionCode: string): void {
+    this.http.get<ApiResponse<PlaySessionStateResponse>>(API_ENDPOINTS.playSession(sessionCode)).subscribe({
+      next: (response) => {
+        this.setCurrentSession(response.data.session.sessionCode);
+        this.courtCount = response.data.session.courtCount;
+        this.currentSessionStats.set(this.sortSessionStatsByPlayerName(response.data.players ?? []));
+        this.currentRound.set(response.data.currentRound);
+        this.completedCourts.set({});
+      },
+      error: () => {
+        this.clearCurrentSession();
+        this.showMessage('Ca chơi đã lưu không còn tồn tại.');
+      }
+    });
+  }
+
+  private loadSessionStats(sessionCode: string): void {
+    this.http.get<ApiResponse<SessionStatsResponse>>(API_ENDPOINTS.playSessionStats(sessionCode)).subscribe({
+      next: (response) => this.currentSessionStats.set(this.sortSessionStatsByPlayerName(response.data?.players ?? [])),
+      error: () => this.showMessage('Không tải được thống kê ca chơi.')
+    });
+  }
+
+  private restoreCurrentSession(): void {
+    const sessionCode = localStorage.getItem(STORAGE_KEYS.currentSession);
+    if (!sessionCode) {
+      return;
+    }
+
+    this.loadSessionState(sessionCode);
+  }
+
+  private setCurrentSession(sessionCode: string): void {
+    this.currentSession.set(sessionCode);
+    localStorage.setItem(STORAGE_KEYS.currentSession, sessionCode);
+  }
+
+  private clearCurrentSession(): void {
+    this.currentSession.set(null);
+    this.currentSessionStats.set([]);
+    this.currentRound.set(null);
+    this.completedCourts.set({});
+    localStorage.removeItem(STORAGE_KEYS.currentSession);
+  }
+
+  private showMessage(message: string): void {
+    this.message.set(message);
+
+    if (this.messageTimeout) {
+      clearTimeout(this.messageTimeout);
+    }
+
+    this.messageTimeout = setTimeout(() => {
+      this.message.set('');
+      this.messageTimeout = null;
+    }, 3500);
+  }
+
+  private sortPlayersByLastName(players: Player[]): Player[] {
+    return [...players].sort((a, b) => {
+      const lastNameCompare = this.getLastName(a.name).localeCompare(this.getLastName(b.name), 'vi', {
+        sensitivity: 'base'
+      });
+
+      return lastNameCompare || a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' });
+    });
+  }
+
+  private sortSessionStatsByPlayerName(stats: SessionPlayerStat[]): SessionPlayerStat[] {
+    return [...stats].sort((a, b) => {
+      const matchCountCompare = a.matchCount - b.matchCount;
+      const lastNameCompare = this.getLastName(a.player.name).localeCompare(
+        this.getLastName(b.player.name),
+        'vi',
+        { sensitivity: 'base' }
+      );
+
+      return (
+        matchCountCompare ||
+        lastNameCompare ||
+        a.player.name.localeCompare(b.player.name, 'vi', { sensitivity: 'base' })
+      );
+    });
+  }
+
+  private getLastName(name: string): string {
+    const parts = name.trim().split(/\s+/);
+    return parts.at(-1) ?? '';
   }
 
   private newPlayerCode(): string {
@@ -345,18 +497,5 @@ export class BadmintonClubService {
       ...EMPTY_PLAYER_FORM,
       playerCode: this.newPlayerCode()
     };
-  }
-
-  private loadHistory(): void {
-    const raw = localStorage.getItem(STORAGE_KEYS.matchHistory);
-    this.history.set(raw ? JSON.parse(raw) : []);
-  }
-
-  private saveHistory(): void {
-    if (!this.isBrowser) {
-      return;
-    }
-
-    localStorage.setItem(STORAGE_KEYS.matchHistory, JSON.stringify(this.history()));
   }
 }

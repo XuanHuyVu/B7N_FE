@@ -1,12 +1,22 @@
-<section class="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-  <article class="rounded-lg bg-white p-4 shadow-sm">
-    <h2 class="section-title mb-4 flex items-center gap-2">
-      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8" /><path d="M12 17v4" /><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z" /></svg>
-      Bảng xếp hạng
-    </h2>
+﻿<section class="grid min-w-0 gap-4 text-pink-950 lg:grid-cols-[0.9fr_1.1fr]">
+  <article class="min-w-0 rounded-lg bg-white p-4 text-pink-950 shadow-sm ring-1 ring-pink-100">
+    <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+      <h2 class="flex items-center gap-2 text-[1.35rem] font-black uppercase leading-none text-pink-600 [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center">
+        <lucide-icon [img]="icons.trophy" [size]="20"></lucide-icon>
+        Bảng xếp hạng
+      </h2>
+      <label class="grid min-w-48 gap-1.5 text-xs font-black uppercase text-pink-500">
+        <select class="min-h-11 rounded-lg border border-pink-200 bg-pink-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-pink-950 outline-none focus:border-pink-400 focus:ring-3 focus:ring-pink-300/40" [ngModel]="club.selectedHistorySession()" (ngModelChange)="club.changeHistorySession($event)">
+          <option value="">Tất cả ca</option>
+          @for (session of club.sessions(); track session.sessionCode) {
+            <option [value]="session.sessionCode">{{ session.sessionCode }}</option>
+          }
+        </select>
+      </label>
+    </div>
     <div class="overflow-x-auto">
-      <table class="w-full min-w-[520px] text-left text-sm">
-        <thead class="text-xs uppercase text-stone-500">
+      <table class="w-full min-w-130 text-left text-sm text-pink-950">
+        <thead class="text-xs uppercase text-pink-400">
           <tr>
             <th class="py-2">#</th>
             <th>Người chơi</th>
@@ -15,7 +25,7 @@
             <th>Tỉ lệ thắng</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-stone-100 font-bold">
+        <tbody class="divide-y divide-pink-100 font-bold">
           @for (row of club.ranking(); track row.player.playerCode; let index = $index) {
             <tr>
               <td class="py-3">{{ index + 1 }}</td>
@@ -23,49 +33,48 @@
               <td>{{ row.matches }}</td>
               <td>{{ row.wins }}</td>
               <td>
-                <span class="rounded-full px-3 py-1 text-xs font-black" [class.bg-green-100]="row.winRate > 0" [class.text-green-800]="row.winRate > 0" [class.bg-stone-100]="row.winRate === 0" [class.text-stone-500]="row.winRate === 0">
+                <span class="rounded-full px-3 py-1 text-xs font-black text-white" [class.bg-pink-500]="row.winRate > 0" [class.bg-pink-200]="row.winRate === 0">
                   {{ row.winRate }}%
                 </span>
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="5" class="py-4 text-stone-500">Chưa có dữ liệu.</td></tr>
+            <tr><td colspan="5" class="py-4 text-pink-400">Chưa có dữ liệu.</td></tr>
           }
         </tbody>
       </table>
     </div>
   </article>
 
-  <article class="rounded-lg bg-white p-4 shadow-sm">
+  <article class="min-w-0 rounded-lg bg-white p-4 text-pink-950 shadow-sm ring-1 ring-pink-100">
     <div class="mb-4 flex items-center justify-between gap-3">
-      <h2 class="section-title">Lịch sử trận đấu</h2>
-      <button class="btn-danger" type="button" (click)="club.clearHistory()">
-        <svg viewBox="0 0 24 24"><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="M19 6l-1 14H6L5 6" /></svg>
-        Xóa lịch sử
-      </button>
+      <h2 class="text-[1.35rem] font-black uppercase leading-none text-pink-600">Lịch sử</h2>
     </div>
     <div class="space-y-5">
-      @for (group of club.groupedHistory(); track group.date) {
+      @for (group of club.groupedHistory(); track group.sessionCode) {
         <div>
-          <h3 class="mb-2 text-sm font-black text-stone-500">{{ group.date }} · {{ group.items.length }} trận</h3>
+          <h3 class="mb-2 text-sm font-black text-pink-400">{{ group.sessionCode }} · {{ group.items.length }} trận</h3>
           <div class="space-y-2">
             @for (item of group.items; track item.id) {
-              <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-md bg-[#fffdf7] p-3 text-sm">
-                <div class="font-extrabold" [class.text-green-800]="item.winner === teamCode.A" [class.text-stone-500]="item.winner !== teamCode.A">
-                  @if (item.winner === teamCode.A) { <span class="trophy">★</span> }
-                  {{ playerNames(item.teamA) }}
+              <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 rounded-md bg-pink-50 p-3 text-sm text-pink-950 sm:gap-3">
+                <div class="col-span-3 text-xs font-black uppercase text-pink-400">Trận {{ item.roundNumber }} · Sân {{ item.courtNumber }} · {{ item.playedAt | date: 'dd/MM/yyyy HH:mm' }}</div>
+                <div class="grid min-w-0 gap-1 break-words font-extrabold leading-tight" [class.text-pink-700]="item.winner === teamCode.A" [class.text-pink-400]="item.winner !== teamCode.A">
+                  @for (player of item.teamA; track player.playerCode) {
+                    <span>{{ player.name }}</span>
+                  }
                 </div>
-                <div class="font-black uppercase text-stone-400">vs</div>
-                <div class="text-right font-extrabold" [class.text-green-800]="item.winner === teamCode.B" [class.text-stone-500]="item.winner !== teamCode.B">
-                  {{ playerNames(item.teamB) }}
-                  @if (item.winner === teamCode.B) { <span class="trophy">★</span> }
+                <div class="px-1 text-center font-black uppercase text-pink-300">vs</div>
+                <div class="grid min-w-0 gap-1 break-words text-right font-extrabold leading-tight" [class.text-pink-700]="item.winner === teamCode.B" [class.text-pink-400]="item.winner !== teamCode.B">
+                  @for (player of item.teamB; track player.playerCode) {
+                    <span>{{ player.name }}</span>
+                  }
                 </div>
               </div>
             }
           </div>
         </div>
       } @empty {
-        <p class="rounded-md bg-stone-100 p-4 text-sm font-semibold text-stone-500">Chưa có lịch sử trận đấu.</p>
+        <p class="rounded-md bg-pink-50 p-4 text-sm font-semibold text-pink-500">Chưa có lịch sử trận đấu.</p>
       }
     </div>
   </article>
