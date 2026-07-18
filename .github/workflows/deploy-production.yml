@@ -39,6 +39,7 @@ jobs:
           IMAGE_NAMESPACE="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
           FRONTEND_IMAGE="${REGISTRY}/${IMAGE_NAMESPACE}/${IMAGE_NAME}:${GITHUB_SHA}"
           FALLBACK_BACKEND_IMAGE="${REGISTRY}/${IMAGE_NAMESPACE}/${BACKEND_IMAGE_NAME}:latest"
+
           echo "image_namespace=${IMAGE_NAMESPACE}" >> "${GITHUB_OUTPUT}"
           echo "frontend_image=${FRONTEND_IMAGE}" >> "${GITHUB_OUTPUT}"
           echo "fallback_backend_image=${FALLBACK_BACKEND_IMAGE}" >> "${GITHUB_OUTPUT}"
@@ -72,12 +73,6 @@ jobs:
     environment: production
 
     steps:
-      - name: Debug Secrets
-        run: |
-          echo "DO_HOST exists: ${{ secrets.DO_HOST != '' }}"
-          echo "DO_USER exists: ${{ secrets.DO_USER != '' }}"
-          echo "DO_SSH_KEY exists: ${{ secrets.DO_SSH_KEY != '' }}"
-          echo "DO_SSH_PORT exists: ${{ secrets.DO_SSH_PORT != '' }}"
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
