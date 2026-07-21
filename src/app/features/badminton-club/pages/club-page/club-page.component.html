@@ -1,19 +1,19 @@
-<main class="min-h-screen bg-pink-50 text-pink-950">
+<main class="min-h-screen bg-sky-50 text-sky-950">
   <div class="mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-4 sm:px-6 lg:px-8">
     <header class="flex items-center gap-3 pt-2">
       <div>
-        <h1 class="font-display text-3xl font-black uppercase leading-none text-pink-600 sm:text-5xl">
+        <h1 class="font-display text-3xl font-black uppercase leading-none text-sky-600 sm:text-5xl">
           B7N
         </h1>
       </div>
     </header>
 
-    <nav class="grid grid-cols-3 gap-2 rounded-lg bg-white p-1 shadow-sm ring-1 ring-pink-100">
+    <nav class="grid grid-cols-3 gap-2 rounded-lg bg-white p-1 shadow-sm ring-1 ring-sky-100">
       @for (tab of tabs; track tab.id) {
         <button
           type="button"
-          class="flex min-h-12 items-center justify-center gap-2 rounded-md px-2 text-sm font-extrabold text-pink-400 transition [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center"
-          [class.bg-pink-500]="activeTab() === tab.id"
+          class="flex min-h-12 items-center justify-center gap-2 rounded-md px-2 text-sm font-extrabold text-sky-400 transition [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center"
+          [class.bg-sky-500]="activeTab() === tab.id"
           [class.text-white]="activeTab() === tab.id"
           [class.shadow-sm]="activeTab() === tab.id"
           (click)="activeTab.set(tab.id)"
@@ -27,7 +27,7 @@
     </nav>
 
     @if (club.message()) {
-      <div class="rounded-md border border-pink-200 bg-pink-100 px-4 py-3 text-sm font-semibold text-pink-700 shadow-sm">
+      <div class="rounded-md border border-sky-200 bg-sky-100 px-4 py-3 text-sm font-semibold text-sky-700 shadow-sm">
         {{ club.message() }}
       </div>
     }
@@ -47,37 +47,37 @@
 
   @if (club.selectedPlayer(); as player) {
     <div class="fixed inset-0 z-50 grid place-items-center bg-black/20 p-4">
-      <form class="w-full max-w-md rounded-lg bg-white p-5 text-pink-950 shadow-xl ring-1 ring-pink-100" (ngSubmit)="club.updateSelectedPlayer()">
+      <form class="w-full max-w-md rounded-lg bg-white p-5 text-sky-950 shadow-xl ring-1 ring-sky-100" (ngSubmit)="club.updateSelectedPlayer()">
         <div class="mb-4 flex items-start justify-between gap-3">
           <div>
-            <h2 class="text-[1.35rem] font-black uppercase leading-none text-pink-600">{{ player.name }}</h2>
-            <p class="text-sm font-bold text-pink-400">{{ player.playerCode }} · điểm {{ player.levelScore ?? 0 }}</p>
+            <h2 class="text-[1.35rem] font-black uppercase leading-none text-sky-600">{{ player.name }}</h2>
+            <p class="text-sm font-bold text-sky-400">{{ player.playerCode }} · điểm {{ player.levelScore ?? 0 }}</p>
           </div>
-          <button type="button" class="grid size-[2.35rem] place-items-center rounded-lg bg-pink-100 text-pink-600 hover:bg-pink-200 [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" (click)="club.closePlayerDetail()" aria-label="Đóng">
+          <button type="button" class="grid size-[2.35rem] place-items-center rounded-lg bg-sky-100 text-sky-600 hover:bg-sky-200 [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" (click)="club.closePlayerDetail()" aria-label="Đóng">
             <lucide-icon [img]="icons.x" [size]="18"></lucide-icon>
           </button>
         </div>
         <div class="grid gap-3">
-          <label class="grid gap-1.5 text-xs font-black uppercase text-pink-500">
+          <label class="grid gap-1.5 text-xs font-black uppercase text-sky-500">
             <span>Tên người chơi</span>
-            <input class="min-h-11 rounded-lg border border-pink-200 bg-pink-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-pink-950 outline-none focus:border-pink-400 focus:ring-3 focus:ring-pink-300/40" name="detailName" [(ngModel)]="player.name" />
+            <input class="min-h-11 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-sky-950 outline-none focus:border-sky-400 focus:ring-3 focus:ring-sky-300/40" name="detailName" [(ngModel)]="player.name" />
           </label>
-          <label class="grid gap-1.5 text-xs font-black uppercase text-pink-500">
+          <label class="grid gap-1.5 text-xs font-black uppercase text-sky-500">
             <span>Giới tính</span>
-            <select class="min-h-11 rounded-lg border border-pink-200 bg-pink-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-pink-950 outline-none focus:border-pink-400 focus:ring-3 focus:ring-pink-300/40" name="detailGender" [(ngModel)]="player.gender">
+            <select class="min-h-11 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-sky-950 outline-none focus:border-sky-400 focus:ring-3 focus:ring-sky-300/40" name="detailGender" [(ngModel)]="player.gender">
               <option [value]="gender.MALE">{{ genderLabels[gender.MALE] }}</option>
               <option [value]="gender.FEMALE">{{ genderLabels[gender.FEMALE] }}</option>
             </select>
           </label>
-          <label class="grid gap-1.5 text-xs font-black uppercase text-pink-500">
+          <label class="grid gap-1.5 text-xs font-black uppercase text-sky-500">
             <span>Trình độ</span>
-            <select class="min-h-11 rounded-lg border border-pink-200 bg-pink-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-pink-950 outline-none focus:border-pink-400 focus:ring-3 focus:ring-pink-300/40" name="detailLevel" [(ngModel)]="player.level">
+            <select class="min-h-11 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-sky-950 outline-none focus:border-sky-400 focus:ring-3 focus:ring-sky-300/40" name="detailLevel" [(ngModel)]="player.level">
               @for (level of levels; track level) {
                 <option [value]="level">{{ levelLabels[level] }}</option>
               }
             </select>
           </label>
-          <button class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-pink-500 px-4 py-2.5 text-sm font-black text-white transition hover:bg-pink-600 disabled:cursor-not-allowed disabled:opacity-55" type="submit">Cập nhật</button>
+          <button class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-black text-white transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-55" type="submit">Cập nhật</button>
         </div>
       </form>
     </div>

@@ -1,41 +1,41 @@
-<section class="space-y-4 text-pink-950">
-  <div class="flex flex-wrap items-end gap-3 rounded-lg bg-white p-4 text-pink-950 shadow-sm ring-1 ring-pink-100">
-    <label class="grid w-32 gap-1.5 text-xs font-black uppercase text-pink-500">
+<section class="space-y-4 text-sky-950">
+  <div class="flex flex-wrap items-end gap-3 rounded-lg bg-white p-4 text-sky-950 shadow-sm ring-1 ring-sky-100">
+    <label class="grid w-32 gap-1.5 text-xs font-black uppercase text-sky-500">
       <span>Số sân</span>
-      <select class="min-h-11 rounded-lg border border-pink-200 bg-pink-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-pink-950 outline-none focus:border-pink-400 focus:ring-3 focus:ring-pink-300/40" name="courtCount" [(ngModel)]="club.courtCount" [disabled]="!!club.currentSession()">
+      <select class="min-h-11 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-[0.95rem] font-bold normal-case text-sky-600 outline-none focus:border-sky-400 focus:ring-3 focus:ring-sky-300/40" name="courtCount" [(ngModel)]="club.courtCount" [disabled]="!!club.currentSession()">
         @for (count of courtOptions; track count) {
           <option [value]="count">{{ count }} sân</option>
         }
       </select>
     </label>
-    <button type="button" class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-pink-500 px-4 py-2.5 text-sm font-black text-white transition hover:bg-pink-600 disabled:cursor-not-allowed disabled:opacity-55 [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" [disabled]="club.loading()" (click)="club.scheduleRound()">
+    <button type="button" class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-black text-white transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-55 [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" [disabled]="club.loading()" (click)="club.scheduleRound()">
       <lucide-icon [img]="icons.shuffle" [size]="18"></lucide-icon>
       Xếp trận
     </button>
-    <button type="button" class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-pink-100 px-4 py-2.5 text-sm font-black text-pink-700 transition hover:bg-pink-200 disabled:cursor-not-allowed disabled:opacity-55 [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" [disabled]="club.loading() || !club.currentSession()" (click)="club.completeSession()">
+    <button type="button" class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-sky-100 px-4 py-2.5 text-sm font-black text-sky-700 transition hover:bg-sky-200 disabled:cursor-not-allowed disabled:opacity-55 [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" [disabled]="club.loading() || !club.currentSession()" (click)="club.completeSession()">
       <lucide-icon [img]="icons.checkCircle" [size]="18"></lucide-icon>
       Kết thúc ca
     </button>
-    <button type="button" class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-pink-100 px-4 py-2.5 text-sm font-black text-pink-700 transition hover:bg-pink-200 disabled:cursor-not-allowed disabled:opacity-55 [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" [disabled]="club.loading() || !club.currentSession()" (click)="club.cancelSchedule()">
+    <button type="button" class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-sky-100 px-4 py-2.5 text-sm font-black text-sky-700 transition hover:bg-sky-200 disabled:cursor-not-allowed disabled:opacity-55 [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" [disabled]="club.loading() || !club.currentSession()" (click)="club.cancelSchedule()">
       <lucide-icon [img]="icons.rotateCcw" [size]="18"></lucide-icon>
       Hủy
     </button>
 
     @if (club.currentSession(); as sessionCode) {
-      <div class="ml-auto grid gap-1 text-right text-sm font-bold text-pink-400">
+      <div class="ml-auto grid gap-1 text-right text-sm font-bold text-sky-400">
         <span>Ca chơi</span>
-        <span class="font-black text-pink-700">{{ sessionCode }}</span>
+        <span class="font-black text-sky-700">{{ sessionCode }}</span>
       </div>
     }
   </div>
 
   @if (club.currentSessionStats().length > 0) {
-    <div class="rounded-lg bg-white p-4 text-pink-950 shadow-sm ring-1 ring-pink-100">
+    <div class="rounded-lg bg-white p-4 text-sky-950 shadow-sm ring-1 ring-sky-100">
       <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         @for (stat of club.currentSessionStats(); track stat.player.playerCode) {
-          <div class="flex items-center justify-between gap-3 rounded-md bg-pink-50 px-3 py-2 text-sm font-bold text-pink-950">
+          <div class="flex items-center justify-between gap-3 rounded-md bg-sky-50 px-3 py-2 text-sm font-bold text-sky-950">
             <span class="min-w-0 truncate">{{ stat.player.name }}</span>
-            <span class="rounded-full bg-pink-500 px-2 py-1 text-xs font-black text-white">{{ stat.matchCount }} trận</span>
+            <span class="rounded-full bg-sky-500 px-2 py-1 text-xs font-black text-white">{{ stat.matchCount }} trận</span>
           </div>
         }
       </div>
@@ -45,31 +45,31 @@
   @if (club.currentRound(); as round) {
     <div class="grid gap-4 lg:grid-cols-2">
       @for (match of round.matches; track match.courtNumber) {
-        <article class="rounded-lg border border-pink-200 bg-white p-4 text-pink-950 shadow-sm">
+        <article class="rounded-lg border border-sky-200 bg-white p-4 text-sky-950 shadow-sm">
           <div class="mb-4 flex items-center justify-between gap-3">
-            <span class="rounded-full bg-pink-100 px-3 py-1 text-xs font-black text-pink-700">
+            <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-black text-sky-700">
               {{ match.sessionCode }} · Trận {{ match.roundNumber }}
             </span>
           </div>
           <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-            <div class="grid min-h-24 content-center gap-2 rounded-lg bg-pink-50 p-4 font-black text-pink-950 max-[520px]:min-h-20 max-[520px]:p-3 max-[520px]:text-[0.85rem]">
+            <div class="grid min-h-24 content-center gap-2 rounded-lg bg-sky-50 p-4 font-black text-sky-950 max-[520px]:min-h-20 max-[520px]:p-3 max-[520px]:text-[0.85rem]">
               @for (player of team(match, teamCode.A); track player.playerCode) {
                 <div>{{ player.name }}</div>
               }
             </div>
-            <div class="font-display text-2xl font-black text-pink-300">VS</div>
-            <div class="grid min-h-24 content-center gap-2 rounded-lg bg-pink-50 p-4 text-right font-black text-pink-950 max-[520px]:min-h-20 max-[520px]:p-3 max-[520px]:text-[0.85rem]">
+            <div class="font-display text-2xl font-black text-sky-300">VS</div>
+            <div class="grid min-h-24 content-center gap-2 rounded-lg bg-sky-50 p-4 text-right font-black text-sky-950 max-[520px]:min-h-20 max-[520px]:p-3 max-[520px]:text-[0.85rem]">
               @for (player of team(match, teamCode.B); track player.playerCode) {
                 <div>{{ player.name }}</div>
               }
             </div>
           </div>
           <div class="mt-4 grid grid-cols-2 gap-2">
-            <button class="inline-flex min-h-11 min-w-0 items-center justify-center gap-1 rounded-lg bg-pink-500 px-2 py-2 text-xs font-black leading-tight text-white transition hover:bg-pink-600 disabled:cursor-not-allowed disabled:opacity-55 sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" type="button" [disabled]="!!club.completedCourts()[match.courtNumber]" (click)="club.recordWinner(match, teamCode.A)">
+            <button class="inline-flex min-h-11 min-w-0 items-center justify-center gap-1 rounded-lg bg-sky-500 px-2 py-2 text-xs font-black leading-tight text-white transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-55 sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" type="button" [disabled]="!!club.completedCourts()[match.courtNumber]" (click)="club.recordWinner(match, teamCode.A)">
               <lucide-icon [img]="icons.trophy" [size]="18"></lucide-icon>
               Đội trái thắng
             </button>
-            <button class="inline-flex min-h-11 min-w-0 items-center justify-center gap-1 rounded-lg bg-pink-500 px-2 py-2 text-xs font-black leading-tight text-white transition hover:bg-pink-600 disabled:cursor-not-allowed disabled:opacity-55 sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" type="button" [disabled]="!!club.completedCourts()[match.courtNumber]" (click)="club.recordWinner(match, teamCode.B)">
+            <button class="inline-flex min-h-11 min-w-0 items-center justify-center gap-1 rounded-lg bg-sky-500 px-2 py-2 text-xs font-black leading-tight text-white transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-55 sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm [&_lucide-icon]:inline-flex [&_lucide-icon]:flex-none [&_lucide-icon]:items-center [&_lucide-icon]:justify-center" type="button" [disabled]="!!club.completedCourts()[match.courtNumber]" (click)="club.recordWinner(match, teamCode.B)">
               <lucide-icon [img]="icons.trophy" [size]="18"></lucide-icon>
               Đội phải thắng
             </button>
