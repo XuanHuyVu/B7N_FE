@@ -1,4 +1,4 @@
-export const API_BASE_URL = '/api';
+export const API_BASE_URL = 'http://localhost:8080/api';
 
 const withSessionFilter = (url: string, sessionCode?: string | null) =>
   sessionCode ? `${url}?sessionCode=${encodeURIComponent(sessionCode)}` : url;
