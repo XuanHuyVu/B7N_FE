@@ -86,7 +86,8 @@ jobs:
             echo "Updating frontend source..."
             git -C B7N_FE fetch origin
             git -C B7N_FE checkout main
-            git -C B7N_FE pull origin main
+            git -C B7N_FE reset --hard origin/main
+            git -C B7N_FE clean -fd
             echo "Building frontend..."
             docker compose build frontend
             echo "Restarting frontend..."
