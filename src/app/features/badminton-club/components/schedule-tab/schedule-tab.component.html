@@ -33,7 +33,7 @@
     <div class="rounded-lg bg-white p-4 text-sky-950 shadow-sm ring-1 ring-sky-100">
       <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         @for (stat of club.currentSessionStats(); track stat.player.playerCode) {
-          <div class="flex items-center justify-between gap-3 rounded-md bg-sky-50 px-3 py-2 text-sm font-bold text-sky-950">
+          <div class="flex items-center justify-between gap-3 rounded-md bg-sky-50 px-3 py-2 text-sm font-bold text-sky-600">
             <span class="min-w-0 truncate">{{ stat.player.name }}</span>
             <span class="rounded-full bg-sky-500 px-2 py-1 text-xs font-black text-white">{{ stat.matchCount }} trận</span>
           </div>
@@ -52,13 +52,13 @@
             </span>
           </div>
           <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-            <div class="grid min-h-24 content-center gap-2 rounded-lg bg-sky-50 p-4 font-black text-sky-950 max-[520px]:min-h-20 max-[520px]:p-3 max-[520px]:text-[0.85rem]">
+            <div class="grid min-h-24 content-center gap-2 rounded-lg bg-sky-50 p-4 font-black text-sky-600 max-[520px]:min-h-20 max-[520px]:p-3 max-[520px]:text-[0.85rem]">
               @for (player of team(match, teamCode.A); track player.playerCode) {
                 <div>{{ player.name }}</div>
               }
             </div>
             <div class="font-display text-2xl font-black text-sky-300">VS</div>
-            <div class="grid min-h-24 content-center gap-2 rounded-lg bg-sky-50 p-4 text-right font-black text-sky-950 max-[520px]:min-h-20 max-[520px]:p-3 max-[520px]:text-[0.85rem]">
+            <div class="grid min-h-24 content-center gap-2 rounded-lg bg-sky-50 p-4 text-right font-black text-sky-600 max-[520px]:min-h-20 max-[520px]:p-3 max-[520px]:text-[0.85rem]">
               @for (player of team(match, teamCode.B); track player.playerCode) {
                 <div>{{ player.name }}</div>
               }

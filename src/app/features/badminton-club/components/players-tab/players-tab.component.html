@@ -54,7 +54,7 @@
         <div class="space-y-3 rounded-md border border-sky-100 bg-sky-50 p-3 text-sky-950">
           <div class="flex min-h-12 items-center gap-3">
             <button class="min-w-0 flex-1 text-left" type="button" (click)="club.openPlayerDetail(player)">
-              <span class="block truncate text-base font-extrabold text-sky-950">{{ player.name }}</span>
+              <span class="block truncate text-base font-extrabold text-sky-600">{{ player.name }}</span>
               <span class="text-xs font-bold text-sky-500">{{ levelLabels[player.level] }}</span>
             </button>
             <button
@@ -78,18 +78,18 @@
             <form class="grid gap-3 border-t border-sky-200 pt-3 sm:grid-cols-2" (ngSubmit)="club.updateEditingPlayer()">
               <label class="grid gap-1.5 text-xs font-black uppercase text-sky-500 sm:col-span-2">
                 <span>Tên người chơi</span>
-                <input class="min-h-11 rounded-lg border border-sky-200 bg-white px-3 py-2 text-[0.95rem] font-bold normal-case text-sky-950 outline-none focus:border-sky-400 focus:ring-3 focus:ring-sky-300/40" name="editName-{{ player.playerCode }}" [(ngModel)]="club.editPlayerForm.name" />
+                <input class="min-h-11 rounded-lg border border-sky-200 bg-white px-3 py-2 text-[0.95rem] font-bold normal-case text-sky-600 outline-none focus:border-sky-400 focus:ring-3 focus:ring-sky-300/40" name="editName-{{ player.playerCode }}" [(ngModel)]="club.editPlayerForm.name" />
               </label>
               <label class="grid gap-1.5 text-xs font-black uppercase text-sky-500">
                 <span>Giới tính</span>
-                <select class="min-h-11 rounded-lg border border-sky-200 bg-white px-3 py-2 text-[0.95rem] font-bold normal-case text-sky-950 outline-none focus:border-sky-400 focus:ring-3 focus:ring-sky-300/40" name="editGender-{{ player.playerCode }}" [(ngModel)]="club.editPlayerForm.gender">
+                <select class="min-h-11 rounded-lg border border-sky-200 bg-white px-3 py-2 text-[0.95rem] font-bold normal-case text-sky-600 outline-none focus:border-sky-400 focus:ring-3 focus:ring-sky-300/40" name="editGender-{{ player.playerCode }}" [(ngModel)]="club.editPlayerForm.gender">
                   <option [value]="gender.MALE">{{ genderLabels[gender.MALE] }}</option>
                   <option [value]="gender.FEMALE">{{ genderLabels[gender.FEMALE] }}</option>
                 </select>
               </label>
               <label class="grid gap-1.5 text-xs font-black uppercase text-sky-500">
                 <span>Trình độ</span>
-                <select class="min-h-11 rounded-lg border border-sky-200 bg-white px-3 py-2 text-[0.95rem] font-bold normal-case text-sky-950 outline-none focus:border-sky-400 focus:ring-3 focus:ring-sky-300/40" name="editLevel-{{ player.playerCode }}" [(ngModel)]="club.editPlayerForm.level">
+                <select class="min-h-11 rounded-lg border border-sky-200 bg-white px-3 py-2 text-[0.95rem] font-bold normal-case text-sky-600 outline-none focus:border-sky-400 focus:ring-3 focus:ring-sky-300/40" name="editLevel-{{ player.playerCode }}" [(ngModel)]="club.editPlayerForm.level">
                   @for (level of levels; track level) {
                     <option [value]="level">{{ levelLabels[level] }}</option>
                   }
